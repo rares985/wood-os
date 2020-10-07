@@ -1,5 +1,6 @@
 CC=/usr/local/i386elfgcc/bin/i386-elf-gcc
 CFLAGS=-Wall -Wextra -Werror
+CFLAGS=-Idrivers -Ikernel
 
 LD=/usr/local/i386elfgcc/bin/i386-elf-ld
 
@@ -20,7 +21,7 @@ kernel.bin: boot/kernel.o $(OBJ)
 
 # Wildcard rule for compiling .c to .o
 %.o: %.c ${HEADERS}
-	$(CC) $(CFLAGS) -ffreestanding -c $^ -o $@
+	$(CC) $(CFLAGS) -ffreestanding -c $< -o $@
 
 # Wildcard rule for compiling ASM to object
 %.o: %.asm

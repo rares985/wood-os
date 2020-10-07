@@ -1,5 +1,7 @@
+#include "tty.h"
+
 void kernel_main()
 {
-    char *video_memory = (char*) 0xB8000;
-    *video_memory = 'X';
+    terminal_initialize();
+    terminal_write("Hello, world!", 13);
 }

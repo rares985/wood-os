@@ -1,25 +1,34 @@
-; Simple boot sector implementation
-
-[org 0x7c00]                ; Tell the assembler code will be loaded at this address
-    mov bp, 0x8000
+; A boot sector that enters 32-bit protected mode.
+[org 0x7c00]
+    mov bp, 0x9000          ; Set the stack
     mov bp, sp
 
-    mov bx, 0x9000
-    mov dh, 2
-    call disk_load
-    mov dx, [0x9000]
-    call print_hex
-    mov dx, [0x9000+512]
-    call print_hex
+    mov bx, MSG_REAL_MODE
+    call print
 
-jmp $
+    call switch_pm
+
+    jmp $
 
 %include "print.asm"
 %include "print_hex.asm"
+%include "print_no_bios.asm"
+%include "gdt.asm"
+%include "switch_pm.asm"
 %include "disk.asm"
 
+; Here is where we arrive after switching to and initialising the 32bit protected mode
+[bits 32]
+BEGIN_PM:
+    mov ebx, MSG_PROT_MODE
+    call print_no_bios
+    jmp $
+
+; Global variables
+MSG_REAL_MODE db "Started in 16-bit Real Mode", 0
+MSG_PROT_MODE db "Landed in 32-bit Protected Mode", 0
+
+; Bootsector padding and magic number
 times 510 - ($ - $$) db 0   ; Fill up to 510th byte with zeros
 dw 0xAA55                   ; Last two bytes must be 55 and AA so BIOS knows we are a boot sector
 
-times 256 dw 0xdada
-times 256 dw 0xface

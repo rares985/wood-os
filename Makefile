@@ -1,14 +1,15 @@
 CC=/usr/local/i386elfgcc/bin/i386-elf-gcc
-CFLAGS=-Wall -Wextra -Werror
-CFLAGS=-Idrivers -Ikernel -Ilibc
+CFLAGS=-Wall -Wextra -Werror -nostdlib -std=c99  -m32 -fno-builtin -fno-stack-protector
+CFLAGS+=-Idrivers -Ikernel -Icpu -Ilibc/include
+
 
 LD=/usr/local/i386elfgcc/bin/i386-elf-ld
 
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c libc/*.c)
-HEADERS = $(wildcard kernel/*.h drivers/*.h libc/*.h)
+C_SOURCES = $(wildcard kernel/*.c drivers/*.c libc/**/*.c cpu/*.c)
+HEADERS = $(wildcard kernel/*.h drivers/*.h libc/**/*.h cpu/*.h)
 # Nice syntax for file extension replacement
 
-OBJ = ${C_SOURCES:.c=.o}
+OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o}
 
 OS_IMAGE_FILE=os-image.bin
 
@@ -35,4 +36,5 @@ run:
 
 clean:
 	rm -rf *.bin *.dis *.o os-image.bin *.elf
-	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o
+	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o cpu/*.o
+	rm -rf libc/**/*.o

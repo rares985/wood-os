@@ -3,17 +3,22 @@
 #include "tty.h"
 #include "io.h"
 
+#include "string.h"
+#include "stdlib.h"
+
 #include <stdint.h>
 
 #define KBD_DATA_PORT   0x60
 
-static void keyboard_callback(registers_t regs);
+static void keyboard_callback(registers_t *regs);
 static void print_letter(uint8_t scancode); 
 
-static void keyboard_callback(registers_t regs)
+static void keyboard_callback(registers_t *regs)
 {
     uint8_t scancode = inb(KBD_DATA_PORT);
 
+    char str[10] = {0};
+    terminal_writestring(itoa(scancode, str, 10));
     print_letter(scancode);
     (void)regs;
 }
@@ -23,7 +28,7 @@ void init_keyboard(void)
     register_interrupt_handler(IRQ1, &keyboard_callback);
 }
 
-static void print_letter(uint8_t scancode) {
+static void print_letter(uint8_t scancode) {    
     switch (scancode) {
         case 0x0:
             terminal_writestring("ERROR");

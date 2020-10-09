@@ -15,9 +15,10 @@ static void idt_set_gate(uint8_t n, uint32_t base, uint16_t selector, uint8_t fl
 
 void init_idt(void)
 {
-    idt_ptr.limit = sizeof(idt_entry_t) * IDT_ENTRIES_NO - 1;
+    idt_ptr.limit = IDT_ENTRIES_NO * sizeof(idt_entry_t) - 1;
     idt_ptr.base  = (uint32_t)&idt_entries;
 
+    /* Unused interrupts must have P bit set to 0 */
     memset(&idt_entries, 0, sizeof(idt_entry_t) * 256);
 
     idt_set_gate(0, (uint32_t)isr0, 0x08, 0x8E);
@@ -87,7 +88,7 @@ void init_idt(void)
 static void idt_set_gate(uint8_t n, uint32_t base, uint16_t selector, uint8_t flags)
 {
     idt_entries[n].low_offset   = base & 0xFFFF;
-    idt_entries[n].high_offset  = (base & 0x0000FFFF) >> 16;
+    idt_entries[n].high_offset  = (base >> 16) & 0xFFFF;
     idt_entries[n].selector     = selector;
     idt_entries[n].flags        = flags;
     idt_entries[n].always0      = 0x00;

@@ -1,34 +1,36 @@
-; In isr.c
+; Defined in isr.c
 [extern isr_handler]
 [extern irq_handler]
 
-; This is our common ISR stub. It saves the processor state, sets
-; up for kernel mode segments, calls the C-level fault handler,
-; and finally restores the stack frame.
+; Common ISR stub
 isr_common_stub:
-    pusha                    ; Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
-
-    mov ax, ds               ; Lower 16-bits of eax = ds.
-    push eax                 ; save the data segment descriptor
-
-    mov ax, 0x10  ; load the kernel data segment descriptor
+    ; Step 1: Save CPU current state
+    pusha                       ; Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
+    mov ax, ds                  ; Lower 16-bits of eax = ds.
+    push eax                    ; save the data segment descriptor
+    mov ax, 0x10                ; load the kernel data segment descriptor
     mov ds, ax
     mov es, ax
     mov fs, ax
     mov gs, ax
+    push esp                    ; registers_t *regs
 
+    ; Step 2: Call C-level handler
+    cld
     call isr_handler
 
-    pop eax        ; reload the original data segment descriptor
-    mov ds, ax
+    ; Step 3: Restore CPU state
+    pop eax
+    pop eax
+    mov ds, ax                  ; reload the original data segment descriptor
     mov es, ax
     mov fs, ax
     mov gs, ax
+    popa                        ; Pops edi,esi,ebp...
+    add esp, 8                  ; Cleans up the pushed error code and pushed ISR number
+    iret                        ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
 
-    popa                     ; Pops edi,esi,ebp...
-    add esp, 8     ; Cleans up the pushed error code and pushed ISR number
-    sti
-    iret           ; pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
+
 
 ; Common IRQ code. Identical to ISR code except for the 'call' 
 ; and the 'pop ebx'
@@ -41,15 +43,17 @@ irq_common_stub:
     mov es, ax
     mov fs, ax
     mov gs, ax
+    push esp
+    cld
     call irq_handler ; Different than the ISR code
     pop ebx  ; Different than the ISR code
+    pop ebx;
     mov ds, bx
     mov es, bx
     mov fs, bx
     mov gs, bx
     popa
     add esp, 8
-    sti
     iret 
 
 ; This macro creates a stub for an IRQ - the first parameter is
@@ -57,7 +61,6 @@ irq_common_stub:
 %macro IRQ 2
     global irq%1
     irq%1:
-        cli
         push byte 0
         push byte %2
         jmp irq_common_stub
@@ -66,7 +69,6 @@ irq_common_stub:
 %macro ISR_NOERRCODE 1  ; define a macro, taking one parameter
     [GLOBAL isr%1]        ; %1 accesses the first parameter.
     isr%1:
-        cli
         push byte 0
         push byte %1
         jmp isr_common_stub
@@ -75,7 +77,6 @@ irq_common_stub:
 %macro ISR_ERRCODE 1
     [GLOBAL isr%1]
     isr%1:
-        cli
         push byte %1
         jmp isr_common_stub
 %endmacro

@@ -3,6 +3,8 @@
 #include "io.h"
 #include "isr.h"
 #include "tty.h"
+#include "string.h"
+#include "stdlib.h"
 
 #define CHANNEL_0   0x40    /* Channel 0 data port */
 #define CHANNEL_1   0x41    /* Channel 1 data port */
@@ -15,14 +17,18 @@
 
 uint32_t tick = 0;
 
-static void timer_callback(registers_t reg);
+static void timer_callback(registers_t *regs);
 
 
 
-static void timer_callback(registers_t reg)
+static void timer_callback(registers_t *regs)
 {
     tick ++;
-    (void) reg;
+    char str[10] = {0};
+    terminal_writestring("Tick: ");
+    terminal_writestring(itoa(tick, str, 10));
+    terminal_writestring("\n");
+    (void)regs;
 }
 
 

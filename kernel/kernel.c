@@ -3,12 +3,12 @@
 #include "keyboard.h"
 #include "timer.h"
 #include "string.h"
+#include "stdlib.h"
 
 #define CLK_FREQ_MS 50
 
 void kernel_main()
 {
-    char str[50] = "normal";
 
     init_idt();
     init_keyboard();
@@ -17,7 +17,5 @@ void kernel_main()
     __asm__ __volatile__ ("sti");
 
     terminal_initialize();
-
-    terminal_writestring(strrev(str));
 
 }

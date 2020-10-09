@@ -3,16 +3,14 @@
 
 char *strrev(char *str)
 {
-    char *aux = NULL;
+    char aux;
     int st = 0;
-    int end = strlen(str);
-
+    int end = strlen(str) - 1;
     while (st < end)
     {
-        *aux = *(str+end);
-        *(str+st) = *(str+end);
-        *(str+end) = *aux;
-
+        aux = *(str+end);
+        *(str+end) = *(str+st);
+        *(str+st) = aux;
         st++;
         end--;
     }

@@ -41,17 +41,30 @@ void terminal_initialize(void)
 void terminal_putchar(char c)
 {
     unsigned char uch = c;
-    terminal_putentryat(uch, display.color, display.col, display.row);
 
-    /* Scroll when row or screen is filled */
-    display.col += 1;
-    if (VGA_WIDTH == display.col)
+    /* If character is newline */
+    if (uch == '\n')
     {
         display.col = 0;
         display.row += 1;
         if (VGA_HEIGHT == display.row)
         {
             display.row = 0;
+        }
+    }
+    else
+    {
+        terminal_putentryat(uch, display.color, display.col, display.row);
+        /* Scroll when row or screen is filled */
+        display.col += 1;
+        if (VGA_WIDTH == display.col)
+        {
+            display.col = 0;
+            display.row += 1;
+            if (VGA_HEIGHT == display.row)
+            {
+                display.row = 0;
+            }
         }
     }
 }

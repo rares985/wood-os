@@ -1,6 +1,7 @@
 # wood-os
-woodOS represents a basic operating system for i386 systems. If you want to contribute, send me a message.
-The OS is implemented from scratch using assembly and C language.
+[![Build Status](https://travis-ci.org/rares985/wood-os.svg?branch=main)](https://travis-ci.org/rares985/wood-os)
+
+woodOS represents a basic operating system for i386 systems. 
 
 At the moment it exists purely for educational purposes, but it might evolve.
 
@@ -13,3 +14,6 @@ At the moment it exists purely for educational purposes, but it might evolve.
  - https://github.com/tuhdo/os01/files/4711780/Operating_Systems_From_0_to_1.pdf
  - http://www.osdever.net/
  - http://reddit.com/r/osdev/
+
+## Contributors
+At the moment, the project has no other contributors than me. If you want to take part, send me a message and I will add you to the contributors team.

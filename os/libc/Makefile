@@ -1,5 +1,5 @@
 CC=/usr/local/i386elfgcc/bin/i386-elf-gcc
-CFLAGS=-Wall -Wextra -Werror -nostdlib -std=c99  -m32 -fno-builtin -fno-stack-protector
+CFLAGS=-Wall -Wextra -Werror -nostdlib -std=c99  -m32 -fno-builtin -fno-stack-protector -ffreestanding
 CFLAGS+=-Iinclude
 
 BUILD_DIR = ../build/libc
@@ -13,7 +13,7 @@ all: $(LIBC_OBJS)
 
 # Wildcard rule for compiling .c to .o
 $(BUILD_DIR)/%.o: %.c ${LIBC_HDRS}
-	$(CC) $(CFLAGS) -ffreestanding -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm $(BUILD_DIR)/*.o

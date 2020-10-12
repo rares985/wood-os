@@ -1,10 +1,6 @@
-#include <stddef.h>
-#include <stdint.h>
-
 #include "idt.h"
-#include "string.h"
-#include "pic.h"
-#include "io.h"
+
+#include <stdint.h>
 
 void idt_set_gate(uint8_t n, uint32_t base, uint16_t selector, uint8_t flags)
 {

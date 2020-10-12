@@ -1,18 +1,10 @@
 #include "isr.h"
 #include "idt.h"
-#include "tty.h"
-#include "io.h"
 #include "pic.h"
-#include "stdlib.h"
-#include "timer.h"
-#include "keyboard.h"
 
 #include "stdio.h"
 
 #include <stdint.h>
-#include <stddef.h>
-
-#include "pic.h"
 
 #define INTERRUPT_NO    256
 
@@ -87,7 +79,6 @@ void isr_install(void)
 void isr_handler(registers_t *r)
 {
     printf("received interrupt: %d", r->int_no);
-    terminal_writestring("MUIE MIE");
 }
 
 void irq_handler(registers_t *regs)

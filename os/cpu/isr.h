@@ -1,7 +1,6 @@
 #ifndef ISR_H_
 #define ISR_H_
 
-#include <stddef.h>
 #include <stdint.h>
 
 #define IRQ0            32
@@ -55,6 +54,7 @@ extern void isr28();
 extern void isr29();
 extern void isr30();
 extern void isr31();
+
 /* IRQ definitions */
 extern void irq0();
 extern void irq1();
@@ -76,20 +76,37 @@ extern void irq15();
 
 typedef struct registers
 {
-   uint32_t ds;                                     // Data segment selector
-   uint32_t edi, esi, ebp, useless, ebx, edx, ecx, eax; // Pushed by pusha.
-   uint32_t int_no, err_code;                       // Interrupt number and error code (if applicable)
-   uint32_t eip, cs, eflags, esp, ss;           // Pushed by the processor automatically.
+   /* Data segment selector */
+   uint32_t ds;
+
+   /* Pushed by pusha */
+   uint32_t edi;
+   uint32_t esi;
+   uint32_t ebp;
+   uint32_t useless;
+   uint32_t ebx;
+   uint32_t edx;
+   uint32_t ecx;
+   uint32_t eax;
+
+   /* Interrupt number and error code */
+   uint32_t int_no;
+   uint32_t err_code;
+
+   /* Pushed by the processor */
+   uint32_t eip;
+   uint32_t cs;
+   uint32_t eflags;
+   uint32_t esp;
+   uint32_t ss;
 } registers_t;
+
 typedef void (*isr_t)(registers_t *);
 
 
 void isr_install(void);
 void isr_handler(registers_t *regs);
 
-// Enables registration of callbacks for interrupts or IRQs.
-// For IRQs, to ease confusion, use the #defines above as the
-// first parameter.
 void register_interrupt_handler(uint8_t n, isr_t handler);
 
 #endif /* ISR_H_ */

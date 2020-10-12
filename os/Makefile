@@ -27,3 +27,4 @@ $(BUILD_DIR)/%.o: %.asm
 
 clean:
 	rm $(OBJ)
+	rm $(BUILD_DIR)/kernel/kernel.bin

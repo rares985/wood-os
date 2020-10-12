@@ -6,10 +6,10 @@
 #include "string.h"
 #include "stdlib.h"
 
-#define CHANNEL_0   0x40    /* Channel 0 data port */
-#define CHANNEL_1   0x41    /* Channel 1 data port */
-#define CHANNEL_2   0x42    /* Channel 2 data port */
-#define PIT_CMD     0x43    /* Mode/command register */
+#define PIT_CHANNEL_0   0x40    /* Channel 0 data port */
+#define PIT_CHANNEL_1   0x41    /* Channel 1 data port */
+#define PIT_CHANNEL_2   0x42    /* Channel 2 data port */
+#define PIT_CMD         0x43    /* Mode/command register */
 
 
 #define PIT_CLK_FREQ    1193180 /* Input frequency of clock for PIT */
@@ -24,10 +24,10 @@ static void timer_callback(registers_t *regs);
 static void timer_callback(registers_t *regs)
 {
     tick ++;
-    char str[10] = {0};
-    terminal_writestring("Tick: ");
-    terminal_writestring(itoa(tick, str, 10));
-    terminal_writestring("\n");
+    // char str[10] = {0};
+    // terminal_writestring("Tick: ");
+    // terminal_writestring(itoa(tick, str, 10));
+    // terminal_writestring("\n");
     (void)regs;
 }
 
@@ -71,8 +71,8 @@ void init_timer(uint32_t freq)
     uint8_t hibyte = (divisor & 0x00FF) >> 8;
 
     /* Send the frequency divisor */
-    outb(PIT_CMD, lobyte);
-    outb(PIT_CMD, hibyte);
+    outb(PIT_CHANNEL_0, lobyte);
+    outb(PIT_CHANNEL_0, hibyte);
 
 
 }

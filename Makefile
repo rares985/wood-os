@@ -27,7 +27,7 @@ os:
 	make -C os
 
 run:
-	qemu-system-i386 -fda os-image.bin
+	qemu-system-i386 -fda build/os-image.bin
 
 clean:
 	make -C bootloader clean

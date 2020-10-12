@@ -8,14 +8,14 @@
 
 #define IDT_ENTRIES_NO 256
 
-idt_entry_t idt_entries[IDT_ENTRIES_NO];
 idt_ptr_t   idt_ptr;
+idt_entry_t idt_entries[IDT_ENTRIES_NO];
 
 static void idt_set_gate(uint8_t n, uint32_t base, uint16_t selector, uint8_t flags);
 
 void init_idt(void)
 {
-    idt_ptr.limit = IDT_ENTRIES_NO * sizeof(idt_entry_t) - 1;
+    idt_ptr.limit = (IDT_ENTRIES_NO * sizeof(idt_entry_t)) - 1;
     idt_ptr.base  = (uint32_t)&idt_entries;
 
     /* Unused interrupts must have P bit set to 0 */

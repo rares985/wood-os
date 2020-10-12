@@ -1,7 +1,6 @@
 #ifndef IDT_H_
 #define IDT_H_
 
-#include <stddef.h>
 #include <stdint.h>
 
 /* How every interrupt gate (handler) is defined */
@@ -27,11 +26,13 @@ struct idt_ptr_s {
 } __attribute__((packed));
 typedef struct idt_ptr_s idt_ptr_t;
 
-#define IDT_ENTRIES 256
+#define IDT_ENTRIES     256
+
+
 idt_entry_t idt_entries[IDT_ENTRIES];
 idt_ptr_t   idt_ptr;
 
-void idt_set_gate(uint8_t n, uint32_t base, uint16_t selector, uint8_t flags);
 
+void idt_set_gate(uint8_t n, uint32_t base, uint16_t selector, uint8_t flags);
 
 #endif /* IDT_H_ */

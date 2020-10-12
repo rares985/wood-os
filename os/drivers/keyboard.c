@@ -4,7 +4,6 @@
 #include "io.h"
 
 #include "string.h"
-#include "stdlib.h"
 
 #include <stdint.h>
 
@@ -17,8 +16,6 @@ static void keyboard_callback(registers_t *regs)
 {
     uint8_t scancode = inb(KBD_DATA_PORT);
 
-    char str[10] = {0};
-    terminal_writestring(itoa(scancode, str, 10));
     print_letter(scancode);
     (void)regs;
 }
@@ -208,12 +205,12 @@ static void print_letter(uint8_t scancode) {
             /* 'keuyp' event corresponds to the 'keydown' + 0x80 
              * it may still be a scancode we haven't implemented yet, or
              * maybe a control/escape sequence */
-            if (scancode <= 0x7f) {
-                terminal_writestring("Unknown key down");
-            } else if (scancode <= 0x39 + 0x80) {
-                terminal_writestring("key up ");
-                print_letter(scancode - 0x80);
-            } else terminal_writestring("Unknown key up");
+            // if (scancode <= 0x7f) {
+            //     terminal_writestring("Unknown key down");
+            // } else if (scancode <= 0x39 + 0x80) {
+            //     terminal_writestring("key up ");
+            //     print_letter(scancode - 0x80);
+            // } else terminal_writestring("Unknown key up");
             break;
     }
 }

@@ -13,4 +13,8 @@ void kernel_main()
     init_idt();
     irq_install();
     terminal_initialize();
+
+    for(;;) {
+        __asm__("hlt");
+    }
 }

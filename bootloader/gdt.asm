@@ -8,8 +8,7 @@
 gdt_start:              ; Used in calculations
 
 gdt_null:               ; Mandatory 8 bytes of 0x00
-    dd 0x0
-    dd 0x0
+    dq 0x00
 
 gdt_code:               ; Code segment descriptor
     ; base = 0x0
@@ -18,11 +17,11 @@ gdt_code:               ; Code segment descriptor
     ; type flags (1 - code, 0 - conforming, 1 - readable,  0 - accessed) ->  1010b
     ; flag2 (1 - granularity, 1 - 32bit default, 0 - 64bit segment,  0 - AVL) -> 1100b
     dw 0xFFFF           ; Limit (bits 0-15)
-    dw 0x0              ; Base (bits 0-15)
-    db 0x0              ; Base (bits 16-23)
+    dw 0x00             ; Base (bits 0-15)
+    db 0x00             ; Base (bits 16-23)
     db 10011010b        ; flags1, type flags
     db 11001111b        ; flags2, limit (bits 16-19)
-    db 0x0              ; Base (bits 24-31)
+    db 0x00             ; Base (bits 24-31)
 
 gdt_data:               ; Data segment descriptor
     ; Same as code segment except for the type flags

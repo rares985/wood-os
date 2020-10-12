@@ -1,7 +1,10 @@
 # wood-os
-Implementation of an operating system for i386 systems
+Implementation of a basic operating system for i386 systems. If you want to contribute, send me a message.
+The OS is implemented from scratch using assembly and C language.
 
-Resources used:
+At the moment it exists purely for educational purposes, but it might evolve.
+
+Useful resources:
  - https://www.cs.bham.ac.uk/~exr/lectures/opsys/10_11/lectures/os-dev.pdf
  - https://github.com/cfenollosa/os-tutorial
  - https://littleosbook.github.io/book.pdf
@@ -9,7 +12,4 @@ Resources used:
  - https://wiki.osdev.org/Main_Page
  - https://github.com/tuhdo/os01/files/4711780/Operating_Systems_From_0_to_1.pdf
  - http://www.osdever.net/
- 
- How everything is set up:
- - Boot sector, disk loading, GDT, switch to 32-bit mode, kernel entry and common interrupt handlers are written in assembly
- - Everything else is written in C
+ - http:/reddit.com/r/osdev/

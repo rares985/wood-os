@@ -8,8 +8,9 @@ OS_IMAGE_FILE=$(BUILD_DIR)/os-image.bin
 BOOTLOADER=$(BUILD_DIR)/bootloader/bootloader.bin
 KERNEL=$(BUILD_DIR)/os/kernel/kernel.bin
 
-all: image
+export DEBUG
 
+all: image
 # Needed for recursive makes
 # If this is not existent, Make will consider the targets already
 # up to date if a folder with the same name exists.
@@ -19,15 +20,15 @@ image: bootloader os
 	cat $(BOOTLOADER) $(KERNEL) > $(OS_IMAGE_FILE)
 
 bootloader:
-	@echo "Building bootloader..."
+	$(info [Building bootloader...] )
 	make -C bootloader
 
 os:
-	@echo "Building OS..."
+	$(info [Building OS...])
 	make -C os
 
 run:
-	qemu-system-i386 -fda build/os-image.bin
+	qemu-system-i386 -fda $(OS_IMAGE_FILE)
 
 clean:
 	make -C bootloader clean

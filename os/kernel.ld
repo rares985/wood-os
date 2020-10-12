@@ -1,29 +1,37 @@
 ENTRY(_start)
-OUTPUT_FORMAT("binary")
+SECTIONS {
+	. = 1M;
+	__kernel_start = .;
 
-SECTIONS
-{
-  .text 0x100000 :
-  {
-    code = .; _code = .; __code = .;
-    *(.text)
-    . = ALIGN(4096);
-  }
+	.text BLOCK(4K) : ALIGN(4K) {
+		*(.multiboot)
+		*(.text)
+	}
 
-  .data :
-  {
-     data = .; _data = .; __data = .;
-     *(.data)
-     *(.rodata)
-     . = ALIGN(4096);
-  }
+	.rodata BLOCK(4K) : ALIGN(4K) {
+		__rodata_start = .;
+		*(.rodata)
+		__rodata_end = .;
+	}
 
-  .bss :
-  {
-    bss = .; _bss = .; __bss = .;
-    *(.bss)
-    . = ALIGN(4096);
-  }
+	.data BLOCK(4K) : ALIGN(4K) {
+		__data_start = .;
+		*(.data)
+		__data_end = .;
+	}
 
-  end = .; _end = .; __end = .;
+	.bss BLOCK(4K) : ALIGN(4K) {
+		__bss_start = .;
+		*(COMMON)
+		*(.bss)
+		__bss_end = .;
+	}
+
+	.modinfo_array : {
+		PROVIDE_HIDDEN(__modules_start = .);
+		KEEP(*(modinfo*))
+		PROVIDE_HIDDEN(__modules_end = .);
+	}
+
+	__kernel_end = .;
 }

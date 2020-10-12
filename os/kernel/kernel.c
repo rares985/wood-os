@@ -6,12 +6,14 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "irq.h"
+#include "isr.h"
 
 void kernel_main()
 {
-
-    init_idt();
-    irq_install();
     terminal_initialize();
-    terminal_writestring("\n");
+    terminal_writestring("Hello, world!\n");
+
+    isr_install();
+    irq_install();
+
 }

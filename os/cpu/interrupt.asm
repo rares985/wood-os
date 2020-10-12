@@ -61,24 +61,27 @@ irq_common_stub:
 %macro IRQ 2
     global irq%1
     irq%1:
-        push byte 0
+        push byte %1
         push byte %2
         jmp irq_common_stub
+        ret
 %endmacro
 
 %macro ISR_NOERRCODE 1  ; define a macro, taking one parameter
-    [GLOBAL isr%1]        ; %1 accesses the first parameter.
+    global isr%1        ; %1 accesses the first parameter.
     isr%1:
         push byte 0
         push byte %1
         jmp isr_common_stub
+        ret
 %endmacro
 
 %macro ISR_ERRCODE 1
-    [GLOBAL isr%1]
+    global isr%1
     isr%1:
         push byte %1
         jmp isr_common_stub
+        ret
 %endmacro
 
 
@@ -90,7 +93,7 @@ ISR_NOERRCODE   4
 ISR_NOERRCODE   5
 ISR_NOERRCODE   6
 ISR_NOERRCODE   7
-ISR_ERRCODE     8       ; Also pushes an error code to stack
+ISR_NOERRCODE   8       ; Pushes always error code 0
 ISR_NOERRCODE   9
 ISR_ERRCODE     10      ; Also pushes an error code to stack
 ISR_ERRCODE     11      ; Also pushes an error code to stack
@@ -99,7 +102,7 @@ ISR_ERRCODE     13      ; Also pushes an error code to stack
 ISR_ERRCODE     14      ; Also pushes an error code to stack
 ISR_NOERRCODE   15
 ISR_NOERRCODE   16
-ISR_NOERRCODE   17
+ISR_ERRCODE     17      ; Also pushes an error code to stack
 ISR_NOERRCODE   18
 ISR_NOERRCODE   19
 ISR_NOERRCODE   20
@@ -112,7 +115,7 @@ ISR_NOERRCODE   26
 ISR_NOERRCODE   27
 ISR_NOERRCODE   28
 ISR_NOERRCODE   29
-ISR_NOERRCODE   30
+ISR_ERRCODE     30      ; Also pushes an error code to stack
 ISR_NOERRCODE   31
 
 IRQ 0, 32

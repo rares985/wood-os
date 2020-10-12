@@ -8,8 +8,8 @@
 
 #define IDT_ENTRIES_NO 256
 
-idt_ptr_t   idt_ptr;
-idt_entry_t idt_entries[IDT_ENTRIES_NO];
+static idt_ptr_t   idt_ptr;
+static idt_entry_t idt_entries[IDT_ENTRIES_NO];
 
 static void idt_set_gate(uint8_t n, uint32_t base, uint16_t selector, uint8_t flags);
 
@@ -20,6 +20,12 @@ void init_idt(void)
 
     /* Unused interrupts must have P bit set to 0 */
     memset(&idt_entries, 0, sizeof(idt_entry_t) * 256);
+
+    /* Remap the IRQ table:
+     * master interrupts start at 32 (0x20),
+     * slave interrupts start at 40 (0x28)
+     */
+    PIC_remap(0x20, 0x28);
 
     idt_set_gate(0, (uint32_t)isr0, 0x08, 0x8E);
     idt_set_gate(1, (uint32_t)isr1, 0x08, 0x8E);
@@ -53,12 +59,6 @@ void init_idt(void)
     idt_set_gate(29, (uint32_t)isr29, 0x08, 0x8E);
     idt_set_gate(30, (uint32_t)isr30, 0x08, 0x8E);
     idt_set_gate(31, (uint32_t)isr31, 0x08, 0x8E);
-
-    /* Remap the IRQ table:
-     * master interrupts start at 32 (0x20),
-     * slave interrupts start at 40 (0x28)
-     */
-    PIC_remap(0x20, 0x28);
 
     /* Set IRQs */
     idt_set_gate(32, (uint32_t)irq0, 0x08, 0x0E);

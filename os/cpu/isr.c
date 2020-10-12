@@ -15,51 +15,11 @@
 
 #define INTERRUPT_NO    256
 
-isr_t interrupt_handlers[INTERRUPT_NO];
-
-/* To print the message which defines every exception */
-char *exception_messages[] = {
-    "Division By Zero",
-    "Debug",
-    "Non Maskable Interrupt",
-    "Breakpoint",
-    "Into Detected Overflow",
-    "Out of Bounds",
-    "Invalid Opcode",
-    "No Coprocessor",
-
-    "Double Fault",
-    "Coprocessor Segment Overrun",
-    "Bad TSS",
-    "Segment Not Present",
-    "Stack Fault",
-    "General Protection Fault",
-    "Page Fault",
-    "Unknown Interrupt",
-
-    "Coprocessor Fault",
-    "Alignment Check",
-    "Machine Check",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved"
-};
-
+static isr_t interrupt_handlers[INTERRUPT_NO];
 
 void isr_handler(registers_t *regs)
 {
-    printf("ISR Unhandled exception: %d (%s)",regs->int_no, exception_messages[regs->int_no]);
+    printf("ISR Unhandled exception: %d",regs->int_no);
     terminal_writestring("\n");
     printf("Err code = %d", regs->err_code);
     terminal_writestring("\n");
@@ -67,7 +27,7 @@ void isr_handler(registers_t *regs)
 
 void irq_handler(registers_t *regs)
 {
-    printf("IRQ Unhandled exception: %d (%s)",regs->int_no, exception_messages[regs->int_no]);
+    printf("IRQ Unhandled exception: %d",regs->int_no);
     terminal_writestring("\n");
     printf("Err code = %d", regs->err_code);
     terminal_writestring("\n");
@@ -78,6 +38,10 @@ void irq_handler(registers_t *regs)
     {
         isr_t handler = interrupt_handlers[regs->int_no];
         handler(regs);
+    }
+    else
+    {
+        printf("Received unhandled IRQ %d", regs->int_no);
     }
 }
 

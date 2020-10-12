@@ -13,5 +13,5 @@ void kernel_main()
     init_idt();
     irq_install();
     terminal_initialize();
-    terminal_writestring("Hello, world!");
+    terminal_writestring("\n");
 }

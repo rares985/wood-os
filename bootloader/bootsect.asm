@@ -17,12 +17,12 @@ KERNEL_OFFSET equ 0x1000    ; Memory offset where the kernel will be loaded
     jmp $
 
 
-%include "boot/print.asm"
-%include "boot/print_hex.asm"
-%include "boot/print_no_bios.asm"
-%include "boot/gdt.asm"
-%include "boot/switch_pm.asm"
-%include "boot/disk.asm"
+%include "print.asm"
+%include "print_hex.asm"
+%include "print_no_bios.asm"
+%include "gdt.asm"
+%include "switch_pm.asm"
+%include "disk.asm"
 
 [bits 16]
 load_kernel:

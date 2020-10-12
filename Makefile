@@ -1,40 +1,35 @@
-CC=/usr/local/i386elfgcc/bin/i386-elf-gcc
-CFLAGS=-Wall -Wextra -Werror -nostdlib -std=c99  -m32 -fno-builtin -fno-stack-protector
-CFLAGS+=-Idrivers -Ikernel -Icpu -Ilibc/include
+# Where to find input and store output
+BUILD_DIR = build
 
+# Output image file 
+OS_IMAGE_FILE=$(BUILD_DIR)/os-image.bin
 
-LD=/usr/local/i386elfgcc/bin/i386-elf-ld
+# Bootloader and kernel image paths
+BOOTLOADER=$(BUILD_DIR)/bootloader/bootloader.bin
+KERNEL=$(BUILD_DIR)/os/kernel/kernel.bin
 
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c libc/**/*.c cpu/*.c)
-HEADERS = $(wildcard kernel/*.h drivers/*.h libc/**/*.h cpu/*.h)
-# Nice syntax for file extension replacement
+all: image
 
-OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o}
+# Needed for recursive makes
+# If this is not existent, Make will consider the targets already
+# up to date if a folder with the same name exists.
+.PHONY: bootloader os
 
-OS_IMAGE_FILE=os-image.bin
+image: bootloader os
+	cat $(BOOTLOADER) $(KERNEL) > $(OS_IMAGE_FILE)
 
-$(OS_IMAGE_FILE): boot/bootsect.bin kernel.bin
-	cat $^ > $@
+bootloader:
+	@echo "Building bootloader..."
+	make -C bootloader
 
-
-kernel.bin: boot/kernel.o $(OBJ)
-	$(LD) -o $@ -Ttext 0x1000 $^ --oformat binary
-
-# Wildcard rule for compiling .c to .o
-%.o: %.c ${HEADERS}
-	$(CC) $(CFLAGS) -ffreestanding -c $< -o $@
-
-# Wildcard rule for compiling ASM to object
-%.o: %.asm
-	nasm -f elf $< -o $@
-
-%.bin: %.asm
-	nasm -f bin $< -o $@
+os:
+	@echo "Building OS..."
+	make -C os
 
 run:
 	qemu-system-i386 -fda os-image.bin
 
 clean:
-	rm -rf *.bin *.dis *.o os-image.bin *.elf
-	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o cpu/*.o
-	rm -rf libc/**/*.o
+	make -C bootloader clean
+	make -C os clean
+	rm $(OS_IMAGE_FILE)

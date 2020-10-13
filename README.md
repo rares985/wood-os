@@ -15,6 +15,7 @@ At the moment it exists purely for educational purposes, but it might evolve.
  - http://www.osdever.net/
  - http://reddit.com/r/osdev/
  - http://www.independent-software.com/category/osdev.html
+ - https://www.google.com/url?sa=t&source=web&rct=j&url=https://www.cs.cmu.edu/~410-s07/p4/p4-boot.pdf&ved=2ahUKEwjk4aD0nLLsAhXn-ioKHXLFBMcQFjAEegQIBRAB&usg=AOvVaw18-D8ujxEa9gpZuK65PFpf
 
 ## Contributors
 At the moment, the project has no other contributors than me. If you want to take part, send me a message and I will add you to the contributors team.

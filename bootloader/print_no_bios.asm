@@ -28,4 +28,3 @@ print_no_bios_loop:
 print_no_bios_done:
     popa
     ret
-

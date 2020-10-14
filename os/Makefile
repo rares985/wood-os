@@ -31,7 +31,7 @@ $(BUILD_DIR)/kernel/kernel.elf: $(OBJS)
 image: $(BUILD_DIR)/kernel/kernel.bin
 
 $(BUILD_DIR)/kernel/kernel.bin: $(OBJS)
-	$(LD) -Ttext 0x1000 $^ -o $@ --oformat binary
+	$(LD) -T kernel.ld $^ -o $@
 
 # Wildcard rule for compiling .c to .o
 $(BUILD_DIR)/%.o: %.c ${OS_HDRS}
@@ -42,5 +42,5 @@ $(BUILD_DIR)/%.o: %.asm
 	nasm -f elf $< -o $@
 
 clean:
-	rm $(OBJ)
+	rm $(OBJS)
 	rm $(BUILD_DIR)/kernel/kernel.bin

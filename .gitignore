@@ -7,6 +7,9 @@
 *.obj
 *.elf
 
+# Log files
+bochsout.txt
+
 # Linker output
 *.ilk
 *.map

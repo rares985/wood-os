@@ -21,8 +21,6 @@ boot0_far:
                             ;    DL - stores the boot drive (thank you BIOS)
     call disk_load
 
-    xchg bx, bx
-    push dx                 ;     Save boot drive to stack for later usage in boot1
     call BOOT1_OFFSET       ; 6.  Pass control to boot1
     jmp $                   ;     If control is ever returned to boot0, hang
 

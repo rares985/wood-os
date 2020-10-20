@@ -4,8 +4,13 @@
 ;
 ; This is necessary for switching to the 32-bit protected mode.
 
+; gdt_null      00 00 00 00 00 00 00 00
+; gdt_code      ff ff 00 00 00 9a cf 00
+; gdt_data      ff ff 00 00 00 92 cf 00
+
 
 gdt_start:              ; Used in calculations
+
 
 gdt_null:               ; Mandatory 8 bytes of 0x00
     dq 0x00

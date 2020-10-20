@@ -2,26 +2,24 @@ KERNEL_OFFSET equ 0xF000
 
 [bits 16]
 boot1:
-    pop dx                              ; Save the boot drive - stack will be overwritten
+    pusha
     mov bp, 0x7000                      ; 1. Set up the stack pointer.
     mov sp, bp
-    push dx                             ; Store it on the new stack
 
-    xchg bx, bx
 
     ; Broken, for now.
-    ; call do_e820                        ; 2. Query BIOS for available memory. This can only be done in
+    ; call do_e820                      ; 2. Query BIOS for available memory. This can only be done in
                                         ;    real mode, so perform it before switching to protected
                                         ;    mode
-
     xchg bx, bx
     call load_kernel                    ; 3. Load the kernel from disk and map it into memory,
                                         ;    using the exact same methods we used for the transition
                                         ;    boot0 -> boot1.
-
+    
     cli                                 ; 4. Disable interrupts until the protected mode 
                                         ;    interrupt vector is set up or interrupts go wild
 
+    xchg bx, bx
     lgdt [gdt_descriptor]               ; 5. Load the GDT, which defines the protected mode
                                         ;    segments (code and data)
 
@@ -33,21 +31,18 @@ boot1:
                                         ;    the CPU ) to our 32-bit code. This forces the CPU
                                         ;    to flush its cache of pre-fetched instructions.
 
-    mov ebx, HELLO_PROT
-    call print_no_bios
-
-    call KERNEL_OFFSET                  ; 8. Give control to the kernel
-    jmp $                               ;    If control is ever returned, hang here
-
 
 ; Function which loads the kernel into memory, starting at KERNEL_OFFSET.
-; According to our memory map, we have around 576K of free memory (0xF000 - 0x9F0000)
+; According to our memory map, we have around 576K of free memory (F000 - 0x9F000)
 ; For now, read only 64 sectors (32K) from the disk.
 load_kernel:
+    pusha
     mov bx, KERNEL_OFFSET               ;  BX - pointer to storage
-    pop dx                              ;  DL - drive from which to read (stored in boot0 on stack)
-    mov dh, 64                          ;  DH - how many sectors to read
+                                        ;  DL - drive from which to read (placed here by BIOS)
+    mov dh, 0x02                        ;  DH - how many sectors to read
     call disk_load
+
+    popa
     ret
 
 
@@ -63,11 +58,16 @@ initialise_pm:
     mov fs, ax
     mov gs, ax
 
-    xchg bx, bx
 
     mov ebp, 0x90000                    ;   Set up stack for protected mode
     mov esp, ebp
-    ret
+
+    mov ebx, HELLO_PROT
+    call print_no_bios
+
+    xchg bx, bx
+    call KERNEL_OFFSET                  ; 8. Give control to the kernel
+    jmp $                               ;    If control is ever returned, hang here
 
 
 %include "disk.asm"
@@ -78,3 +78,13 @@ initialise_pm:
 %include "e820.asm"
 
 HELLO_PROT db "protected mode!", 0
+
+
+; Recall that in boot0 we read 16 sectors from boot drive.
+; 16 * 512 bytes = 8K of data. Therefore, we must read from
+; boot disk, starting with sector 17 if we want to read the kernel.
+; In order to do this, we must make the boot1 occupy exactly 8K due
+; to how the OS is built, otherwise in the OS image the 8K will span 
+; both boot1 and some parts of the kernel. So we are padding from current
+; address up until 8192 with zeros.
+times 8192 - ($ - $$) db 0

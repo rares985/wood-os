@@ -6,20 +6,20 @@ boot1:
     mov bp, 0x7000                      ; 1. Set up the stack pointer.
     mov sp, bp
 
-
     ; Broken, for now.
     ; call do_e820                      ; 2. Query BIOS for available memory. This can only be done in
                                         ;    real mode, so perform it before switching to protected
                                         ;    mode
+
     xchg bx, bx
     call load_kernel                    ; 3. Load the kernel from disk and map it into memory,
                                         ;    using the exact same methods we used for the transition
                                         ;    boot0 -> boot1.
+    xchg bx, bx
     
     cli                                 ; 4. Disable interrupts until the protected mode 
                                         ;    interrupt vector is set up or interrupts go wild
 
-    xchg bx, bx
     lgdt [gdt_descriptor]               ; 5. Load the GDT, which defines the protected mode
                                         ;    segments (code and data)
 
@@ -34,12 +34,13 @@ boot1:
 
 ; Function which loads the kernel into memory, starting at KERNEL_OFFSET.
 ; According to our memory map, we have around 576K of free memory (F000 - 0x9F000)
-; For now, read only 64 sectors (32K) from the disk.
+; For now, read only 32 sectors (16K) from the disk.
 load_kernel:
     pusha
     mov bx, KERNEL_OFFSET               ;  BX - pointer to storage
                                         ;  DL - drive from which to read (placed here by BIOS)
-    mov dh, 0x02                        ;  DH - how many sectors to read
+    mov dh, 32                          ;  DH - how many sectors to read
+    mov cl, 18                          ;  CL - sector from which to start (1 from boot0 + 16 from boot1 = 17 occupied)
     call disk_load
 
     popa
@@ -64,7 +65,6 @@ initialise_pm:
 
     mov ebx, HELLO_PROT
     call print_no_bios
-
     xchg bx, bx
     call KERNEL_OFFSET                  ; 8. Give control to the kernel
     jmp $                               ;    If control is ever returned, hang here
@@ -82,7 +82,7 @@ HELLO_PROT db "protected mode!", 0
 
 ; Recall that in boot0 we read 16 sectors from boot drive.
 ; 16 * 512 bytes = 8K of data. Therefore, we must read from
-; boot disk, starting with sector 17 if we want to read the kernel.
+; boot disk, starting with sector 18 if we want to read the kernel.
 ; In order to do this, we must make the boot1 occupy exactly 8K due
 ; to how the OS is built, otherwise in the OS image the 8K will span 
 ; both boot1 and some parts of the kernel. So we are padding from current

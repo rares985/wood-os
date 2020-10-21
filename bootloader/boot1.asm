@@ -1,4 +1,5 @@
-KERNEL_OFFSET equ 0xF000
+KERNEL_SEGM     equ 0x0F00
+KERNEL_OFFS     equ 0x0000
 
 [bits 16]
 boot1:
@@ -32,15 +33,19 @@ boot1:
                                         ;    to flush its cache of pre-fetched instructions.
 
 
+
 ; Function which loads the kernel into memory, starting at KERNEL_OFFSET.
 ; According to our memory map, we have around 576K of free memory (F000 - 0x9F000)
 ; For now, read only 32 sectors (16K) from the disk.
 load_kernel:
     pusha
-    mov bx, KERNEL_OFFSET               ;  BX - pointer to storage
                                         ;  DL - drive from which to read (placed here by BIOS)
-    mov dh, 32                          ;  DH - how many sectors to read
-    mov cl, 18                          ;  CL - sector from which to start (1 from boot0 + 16 from boot1 = 17 occupied)
+    mov al, 64                          ;  AL - how many sectors to read
+    mov cl, 18                          ;  CL - LBA address of sector from which to start (1 from boot0 + 16 from boot1 = 17 occupied)
+    mov bx, KERNEL_SEGM
+    mov es, bx
+    mov bx, KERNEL_OFFS                 ;  BX - pointer to storage
+
     call disk_load
 
     popa
@@ -66,7 +71,7 @@ initialise_pm:
     mov ebx, HELLO_PROT
     call print_no_bios
     xchg bx, bx
-    call KERNEL_OFFSET                  ; 8. Give control to the kernel
+    call KERNEL_SEGM:KERNEL_OFFS        ; 8. Give control to the kernel
     jmp $                               ;    If control is ever returned, hang here
 
 

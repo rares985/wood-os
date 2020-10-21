@@ -16,14 +16,15 @@ boot0_far:
     sti                     ; 4. Enable interrupts
 
                             ; 5. Load boot1 into memory, starting at address 0x1000
-    mov bx, BOOT1_OFFSET    ;    BX - pointer to storage location
-    mov dh, 16              ;    DH - how many sectors to read (16 sectors = 8K)
-    mov cl, 2               ;    CL - sector at which to start: 2 (right after the boot sector)
                             ;    DL - stores the boot drive (thank you BIOS)
+    mov al, 16              ;    AL - how many sectors to read (16 sectors = 8K)
+    mov cl, 1               ;    CL - LBA start address: sector 1 (right after the boot sector)
+    mov bx, BOOT1_OFFSET    ;    BX - pointer to storage location
+    xchg bx, bx
     call disk_load
+
     call BOOT1_OFFSET       ; 6.  Pass control to boot1
     jmp $                   ;     If control is ever returned to boot0, hang
-
 
 %include "disk.asm"
 %include "print.asm"

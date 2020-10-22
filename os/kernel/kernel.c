@@ -11,10 +11,16 @@
 
 void kernel_main()
 {
-    terminal_initialize();
-    terminal_writestring("Hello, world!\n");
+    const char *debug = "DEBUGDEBUGDEBUGDEBUGDEBUG";
+    // terminal_initialize();
+    // terminal_writestring("Hello, world!\n");
 
+    while (1) {
 
+    };
+
+    char *mem = (char*)0xB8000;
+    *mem = 'X';
     // isr_install();
     // irq_install();
 

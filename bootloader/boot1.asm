@@ -1,4 +1,4 @@
-KERNEL_OFFSET equ 0xF000
+KERNEL_OFFSET     equ 0xF000
 
 [bits 16]
 boot1:
@@ -10,13 +10,10 @@ boot1:
     ; call do_e820                      ; 2. Query BIOS for available memory. This can only be done in
                                         ;    real mode, so perform it before switching to protected
                                         ;    mode
-
-    xchg bx, bx
     call load_kernel                    ; 3. Load the kernel from disk and map it into memory,
                                         ;    using the exact same methods we used for the transition
                                         ;    boot0 -> boot1.
-    xchg bx, bx
-    
+
     cli                                 ; 4. Disable interrupts until the protected mode 
                                         ;    interrupt vector is set up or interrupts go wild
 
@@ -32,20 +29,33 @@ boot1:
                                         ;    to flush its cache of pre-fetched instructions.
 
 
+
 ; Function which loads the kernel into memory, starting at KERNEL_OFFSET.
 ; According to our memory map, we have around 576K of free memory (F000 - 0x9F000)
 ; For now, read only 32 sectors (16K) from the disk.
 load_kernel:
     pusha
-    mov bx, KERNEL_OFFSET               ;  BX - pointer to storage
                                         ;  DL - drive from which to read (placed here by BIOS)
-    mov dh, 32                          ;  DH - how many sectors to read
-    mov cl, 18                          ;  CL - sector from which to start (1 from boot0 + 16 from boot1 = 17 occupied)
+    mov dh, 64                          ;  DH - how many sectors to read
+    mov ax, 17                          ;  AX - LBA address of sector from which to start (1 from boot0 + 16 from boot1 = 17 occupied)
+    mov bx, 0
+    mov es, bx
+    mov bx, KERNEL_OFFSET               ; We want to load the kernel at KERNEL_OFFSET.
     call disk_load
 
     popa
     ret
 
+
+
+%include "disk.asm"
+%include "print.asm"
+%include "print_hex.asm"
+%include "gdt.asm"
+%include "e820.asm"
+
+; 32-bit includes
+%include "print_no_bios.asm"
 
 ; Function which initialises the protected mode:
 ;  - segment registers must point to the new data selector defined in GDT
@@ -65,17 +75,8 @@ initialise_pm:
 
     mov ebx, HELLO_PROT
     call print_no_bios
-    xchg bx, bx
     call KERNEL_OFFSET                  ; 8. Give control to the kernel
     jmp $                               ;    If control is ever returned, hang here
-
-
-%include "disk.asm"
-%include "print.asm"
-%include "print_hex.asm"
-%include "gdt.asm"
-%include "print_no_bios.asm"
-%include "e820.asm"
 
 HELLO_PROT db "protected mode!", 0
 

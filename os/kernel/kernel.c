@@ -11,11 +11,14 @@
 
 void kernel_main()
 {
+    isr_install();
+    irq_install();
     terminal_initialize();
     terminal_writestring("Hello, world!\n");
 
+    while (1) {
 
-    // isr_install();
-    // irq_install();
+    };
+
 
 }

@@ -53,7 +53,6 @@ disk_load_loop:
     int 0x13
     jc disk_error       ; If errored, carry bit will be set
 
-    xchg bx, bx
     pop ax              ; Restore the sector count
     mov dh, ah          ; Exit condition requires sector count to be stored in dh
 

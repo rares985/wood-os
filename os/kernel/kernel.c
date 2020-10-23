@@ -11,12 +11,9 @@
 
 void kernel_main()
 {
-    const char *debug = "DEBUGDEBUGDEBUGDEBUGDEBUG";
-    // terminal_initialize();
-    // terminal_writestring("Hello, world!\n");
-
-    char *mem = (char*)0xB8000;
-    *mem = 'X';
+    terminal_initialize();
+    terminal_putchar('H');
+    terminal_write("abc", 3);
 
     while (1) {
 

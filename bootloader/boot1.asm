@@ -41,7 +41,6 @@ load_kernel:
     mov bx, 0
     mov es, bx
     mov bx, KERNEL_OFFSET               ; We want to load the kernel at KERNEL_OFFSET.
-    xchg bx, bx
     call disk_load
 
     popa
@@ -71,12 +70,11 @@ initialise_pm:
     mov gs, ax
 
 
-    mov ebp, 0xF000                    ;   Set up stack for protected mode
+    mov ebp, 0x90000                    ;   Set up stack for protected mode
     mov esp, ebp
 
     mov ebx, HELLO_PROT
     call print_no_bios
-    xchg bx, bx
     call KERNEL_OFFSET                  ; 8. Give control to the kernel
     jmp $                               ;    If control is ever returned, hang here
 

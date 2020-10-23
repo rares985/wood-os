@@ -32,7 +32,7 @@ disk_load_loop:
 
     pop ax              ; Our stack top is the value of DX before being trashed.
                         ; This means that after the pop operation, AX will contain 
-                        ; the drive in AH, and the sector count (how many sectors to read) in AL.
+                        ; the drive in AL, and the sector count (how many sectors to read) in AH.
                         ; INT13H requires the drive to be stored in DL and the 
                         ; Head (H) value to be stored in DH. Since the head is placed
     mov dl, al          ; into DH by the lba2chs function, we can not perform a pop directly
@@ -50,24 +50,65 @@ disk_load_loop:
                         ; DH - Head (H) - placed by lba2chs function
                         ; DL - drive - placed by us
                         ; ES:BX - destination pointer (placed by callee of this function)
-
     int 0x13
     jc disk_error       ; If errored, carry bit will be set
 
+    xchg bx, bx
     pop ax              ; Restore the sector count
-    mov dh, al          ; Exit condition requires sector count to be stored in dh
+    mov dh, ah          ; Exit condition requires sector count to be stored in dh
 
     pop cx              ; Restore the counter
     add cl, 1           ; Increment the counter of read sectors
 
+    call check_new_segment  ; Check if we need to modify the ES:BX addressing.
+
+    add bx, 512         ; Increment the BX pointer (+512 bytes)
+
     pop ax              ; Restore LBA address
     add ax, 1           ; Increment the LBA address (+1 sector)
-    add bx, 512         ; Increment the BX pointer (+512 bytes)
+
+    jc address_error    ; If address of offset (BX) jumps over FFFF, it will wraparound to 0,
+                        ; crashing the OS
 
     jmp disk_load_loop  ; Loop back
 
 disk_load_done:
     ret
+
+; We are getting the current address in BX.
+; We know that BX + 200 is > FFFF and would no longer fit inside
+; bx, so we need to  compute a new ES value. For simplicity, we will
+; be setting the offset of the new pair to 0. Since the two addresses
+; old_es:bx and new_es:0000 need to resolve to the same physical address,
+; the equation goes: (old_es*10h + bx) = new_es*10h. From here, we can
+; extract (new_es - old_es) = bx / 10h. Now we know that we need to add
+; bs >> 4 to the old_es in order to get the new segment value.
+; 
+check_new_segment:
+    push ax             ; We will trash AX and CX, we will need to restore them
+    push cx
+
+    mov ax, 0xFE00
+    cmp bx, ax
+    jae compute_new_segment     ; Perform an unsigned comparison (BX >= FE00), that means if
+                                ; BX is in the range (FE00 - FFFF).
+
+done_new_segment:
+    pop cx
+    pop ax
+    ret
+
+compute_new_segment:
+    mov cx, es          ; cx = old_es
+    shr bx, 4           ; bx = bx >> 4
+    add cx, bx          ; cx = old_es + bx >> 4
+    mov es, cx          ; es = new_es = old_es + bx >> 4
+    mov bx, 0           ; bx = 0
+                        ; After exiting the function, ES:BX (aka INT13h destination pointer),
+                        ; will be pointing to ES:0000, to which we can safely add the value 512 (200h),
+                        ; since it will not overflow.
+    jmp done_new_segment
+
 
 
 ; Function which converts a  LBA address to CHS.
@@ -114,6 +155,11 @@ lba2chs:
     ret
 
 
+address_error:
+    mov bx, ADDRESS_ERR_MSG
+    call print
+    jmp $
+
 disk_error:
     mov bx, DISK_ERR_MSG
     call print
@@ -123,3 +169,5 @@ disk_error:
 
 DISK_ERR_MSG:
     db "Disk read error!", 0
+ADDRESS_ERR_MSG:
+    db "Address error!", 0

@@ -21,7 +21,6 @@ boot0_far:
     mov ax, 1               ;    AX - LBA start address: sector 1 (right after the boot sector)
     mov bx, BOOT1_OFFSET    ;    BX - pointer to storage location
     call disk_load
-
     call BOOT1_OFFSET       ; 6.  Pass control to boot1
     jmp $                   ;     If control is ever returned to boot0, hang
 

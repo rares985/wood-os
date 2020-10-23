@@ -1,6 +1,5 @@
 KERNEL_OFFSET     equ 0xF000
 
-
 [bits 16]
 boot1:
     pusha
@@ -11,7 +10,6 @@ boot1:
     ; call do_e820                      ; 2. Query BIOS for available memory. This can only be done in
                                         ;    real mode, so perform it before switching to protected
                                         ;    mode
-
     call load_kernel                    ; 3. Load the kernel from disk and map it into memory,
                                         ;    using the exact same methods we used for the transition
                                         ;    boot0 -> boot1.
@@ -40,8 +38,10 @@ load_kernel:
                                         ;  DL - drive from which to read (placed here by BIOS)
     mov dh, 64                          ;  DH - how many sectors to read
     mov ax, 17                          ;  AX - LBA address of sector from which to start (1 from boot0 + 16 from boot1 = 17 occupied)
-
+    mov bx, 0
+    mov es, bx
     mov bx, KERNEL_OFFSET               ; We want to load the kernel at KERNEL_OFFSET.
+    xchg bx, bx
     call disk_load
 
     popa
@@ -71,7 +71,7 @@ initialise_pm:
     mov gs, ax
 
 
-    mov ebp, 0x90000                    ;   Set up stack for protected mode
+    mov ebp, 0xF000                    ;   Set up stack for protected mode
     mov esp, ebp
 
     mov ebx, HELLO_PROT

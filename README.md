@@ -16,6 +16,7 @@ At the moment it exists purely for educational purposes, but it might evolve.
  - http://reddit.com/r/osdev/
  - http://www.independent-software.com/category/osdev.html
  - https://www.cs.cmu.edu/~410-s07/
+ - http://www.brokenthorn.com/Resources/OSDevIndex.html
 
 ## Contributors
 At the moment, the project has no other contributors than me. If you want to take part, send me a message and I will add you to the contributors team.

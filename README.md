@@ -5,14 +5,6 @@ woodOS represents a basic operating system for i386
 
 At the moment it exists purely for educational purposes, but it might evolve.
 
-## Features
-- [x] Two stage bootloader
-- [x] Interrupt handling (ISR and IRQ)
-- [x] Memory Detection
-- [x] Physical Memory Manager
-- [x] Memory allocator
-- [x] 32-Bit Protected Mode
-
 ## Documentation
 All the resources presented below, as well as any other information / explanation of how this operating system works is available on the [wiki](https://github.com/rares985/wood-os/wiki) page of the repository.
 
@@ -29,6 +21,17 @@ All the resources presented below, as well as any other information / explanatio
  - http://www.independent-software.com/category/osdev.html
  - https://www.cs.cmu.edu/~410-s07/
  - http://www.brokenthorn.com/Resources/OSDevIndex.html
-
+ 
+ ## Building
+ For building the project, it is enough to issue the command `make` in the root directory of the project
+ 
+ ## Debugging
+ Debugging is possible either via Bochs internal debugger (usually in the Bootloader phase) or via GDB.
+ For GDB, simply run `gdb` in the root directory.
+ For Bochs, run `./bochs.sh`
+ 
+ ## Running
+ Running is possible either in QEMU (via `./qemu.sh`) or in Bochs (`./bochs.sh`)
+ 
 ## Contributors
 At the moment, the project has no other contributors than me. If you want to take part, send me a message and I will add you to the contributors team.

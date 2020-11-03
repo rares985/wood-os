@@ -10,6 +10,8 @@
 #include <stdbool.h>
 #include <stdarg.h>
 
+
+
 int printf(const char *format, ...)
 {
     int written_bytes = 0;
@@ -39,6 +41,10 @@ int printf(const char *format, ...)
                 case 'd':
                     intarg = va_arg(params, int);
                     terminal_writestring(itoa(intarg, str, 10));
+                    break;
+                case 'x':
+                    intarg = va_arg(params, int);
+                    terminal_writestring(itoa(intarg, str, 16));
                     break;
                 default:
                     break;

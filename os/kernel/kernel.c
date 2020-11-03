@@ -7,6 +7,7 @@
 #include "stdio.h"
 #include "irq.h"
 #include "isr.h"
+#include "physmem.h"
 
 
 void kernel_main()
@@ -14,11 +15,12 @@ void kernel_main()
     isr_install();
     irq_install();
     terminal_initialize();
-    terminal_writestring("Hello, world!\n");
+    printf("Hello, world!\n");
+
+    physmem_init();
 
     while (1) {
 
     };
-
 
 }

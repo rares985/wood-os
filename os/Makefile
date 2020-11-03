@@ -2,7 +2,7 @@ CC=/usr/local/i386elfgcc/bin/i386-elf-gcc
 LD=/usr/local/i386elfgcc/bin/i386-elf-ld
 CFLAGS=-nostdlib -std=c99 -m32 -fno-builtin -fno-stack-protector -ffreestanding
 CFLAGS+=-Wall -Wextra -Werror
-CFLAGS+=-Idrivers -Ikernel -Icpu -Ilibc/include
+CFLAGS+=-Idrivers -Ikernel -Icpu -Ilibc/include -Ikernel/include
 
 ifdef DEBUG
 CFLAGS+=-g
@@ -15,7 +15,7 @@ OS_HDRS = $(wildcard */*.h)
 
 OBJ = $(patsubst %.c, $(BUILD_DIR)/%.o, $(OS_SRCS))
 
-OBJS = $(BUILD_DIR)/kernel/kernel_call.o $(BUILD_DIR)/cpu/interrupt.o $(OBJ) 
+OBJS = $(BUILD_DIR)/kernel/kernel_call.o $(BUILD_DIR)/cpu/interrupt.o $(BUILD_DIR)/kernel/paging.o $(OBJ) 
 
 ifdef DEBUG
 all: image elf

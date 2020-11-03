@@ -7,9 +7,13 @@ boot1:
     mov sp, bp
 
     ; Broken, for now.
-    ; call do_e820                      ; 2. Query BIOS for available memory. This can only be done in
+    mov bx, 0
+    mov es, bx
+    mov di, 0x5000
+    call do_e820                        ; 2. Query BIOS for available memory. This can only be done in
                                         ;    real mode, so perform it before switching to protected
                                         ;    mode
+    xchg bx, bx
     call load_kernel                    ; 3. Load the kernel from disk and map it into memory,
                                         ;    using the exact same methods we used for the transition
                                         ;    boot0 -> boot1.

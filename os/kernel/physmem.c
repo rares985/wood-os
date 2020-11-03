@@ -105,6 +105,7 @@ void physmem_init(void)
     write_cr3((uint32_t)page_directory);
 
     uint32_t cr0 = read_cr0();
+
     cr0 |= (1 << PAGING_BIT);
 
     write_cr0(cr0);

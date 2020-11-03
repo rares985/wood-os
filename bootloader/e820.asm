@@ -10,7 +10,6 @@ FUNCCODE equ 0xE820
 mmap_ent equ 0x4000             ; the number of entries will be stored at 0x8000
 do_e820:
     pusha
-    xchg bx, bx
     mov di, 0x4004          ; Set di to 0x8004. Otherwise this code will get stuck in `int 0x15` after some entries are fetched 
     xor ebx, ebx		; ebx must be 0 to start
     xor bp, bp		; keep an entry count in bp
@@ -19,7 +18,6 @@ do_e820:
     mov [es:di + 20], dword 1	; force a valid ACPI 3.X entry
     mov ecx, 24		; ask for 24 bytes
     int 0x15
-    xchg bx, bx
     jc short .failed	; carry set on first call means "unsupported function"
     mov edx, SMAP	; Some BIOSes apparently trash this register?
     cmp eax, edx		; on success, eax must have been reset to "SMAP"
@@ -31,9 +29,7 @@ do_e820:
     mov eax, FUNCCODE		; eax, ecx get trashed on every int 0x15 call
     mov [es:di + 20], dword 1	; force a valid ACPI 3.X entry
     mov ecx, 24		; ask for 24 bytes again
-    xchg bx, bx
     int 0x15
-    xchg bx, bx
     jc short .e820f		; carry set means "end of list already reached"
     mov edx, SMAP	; repair potentially trashed register
 .jmpin:

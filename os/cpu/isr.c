@@ -91,10 +91,10 @@ void irq_handler(registers_t *regs)
         isr_t handler = interrupt_handlers[regs->int_no];
         handler(regs);
     }
-    else
-    {
-        printf("Received unhandled IRQ %d", regs->int_no);
-    }
+    // else
+    // {
+    //     printf("Received unhandled IRQ %d", regs->int_no);
+    // }
 }
 
 void register_interrupt_handler(uint8_t n, isr_t handler)

@@ -27,12 +27,6 @@ os:
 	$(info [Building OS...])
 	make -C os
 
-run:
-	qemu-system-i386 -fda $(OS_IMAGE_FILE)
-
-debug:
-	bochs -f bochsrc.txt
-
 clean:
 	make -C bootloader clean
 	make -C os clean

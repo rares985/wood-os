@@ -10,6 +10,9 @@
 # Log files
 bochsout.txt
 
+# IDE files/folders
+.vscode/*
+
 # Linker output
 *.ilk
 *.map

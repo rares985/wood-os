@@ -16,7 +16,7 @@ all: image
 # up to date if a folder with the same name exists.
 .PHONY: bootloader os
 
-image: bootloader os
+image: dirs bootloader os
 	cat $(BOOTLOADER) $(KERNEL) > $(OS_IMAGE_FILE)
 
 bootloader:
@@ -27,7 +27,11 @@ os:
 	$(info [Building OS...])
 	make -C os
 
+dirs:
+	mkdir -p $(BUILD_DIR)
+
 clean:
 	make -C bootloader clean
 	make -C os clean
 	rm $(OS_IMAGE_FILE)
+	rmdir $(BUILD_DIR)

@@ -4,7 +4,7 @@ BUILD_ROOT = ../build
 BUILD_DIR = $(BUILD_ROOT)/bootloader
 IMAGE_NAME = bootloader.bin
 
-all: $(BUILD_DIR)/$(IMAGE_NAME)
+all: dirs $(BUILD_DIR)/$(IMAGE_NAME)
 
 $(BUILD_DIR)/$(IMAGE_NAME): $(BUILD_DIR)/boot0.bin $(BUILD_DIR)/boot1.bin
 	cat $^ > $@
@@ -18,5 +18,9 @@ $(BUILD_DIR)/boot1.o: boot1.asm
 $(BUILD_DIR)/boot0.bin: boot0.asm
 	nasm -f bin $< -o $@
 
+dirs:
+	mkdir -p $(BUILD_DIR)
+
 clean:
 	rm $(BUILD_DIR)/*
+	rmdir $(BUILD_DIR)

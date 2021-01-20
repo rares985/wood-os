@@ -29,7 +29,7 @@ elf: $(BUILD_DIR)/kernel/kernel.elf
 $(BUILD_DIR)/kernel/kernel.elf: $(OBJS)
 	$(LD) -T kernel.ld $^ -o $@
 
-image: $(BUILD_DIR)/kernel/kernel.bin
+image: dirs $(BUILD_DIR)/kernel/kernel.bin
 
 $(BUILD_DIR)/kernel/kernel.bin: $(OBJS)
 	$(LD) -T kernel.ld $^ -o $@
@@ -42,6 +42,10 @@ $(BUILD_DIR)/%.o: %.c ${OS_HDRS}
 $(BUILD_DIR)/%.o: %.asm
 	nasm -f elf $< -o $@
 
+dirs:
+	mkdir -p $(BUILD_DIR)
+
 clean:
 	rm $(OBJS)
 	rm $(BUILD_DIR)/kernel/kernel.bin
+	rmdir $(BUILD_DIR)

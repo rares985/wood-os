@@ -33,5 +33,5 @@ dirs:
 clean:
 	make -C bootloader clean
 	make -C os clean
-	rm $(OS_IMAGE_FILE)
+	rm -f $(OS_IMAGE_FILE)
 	rmdir $(BUILD_DIR)

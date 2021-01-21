@@ -1,19 +1,57 @@
-
+/*
+ * For paging to be set up, some structures have to be prepared in memory.
+ * On x86 systems, the maximum addresable memory is 4GiB. The x86 architecture
+ * requires that the structures which describe this memory be setup as follows:
+ * CR3 Register: Must hold a 4KiB-aligned address at which the Paging Directory (PD) structure starts
+ * Page Directory (PD): At the address specified in CR3, there must be an array of 1024 entries, each 4 bytes in size
+ *  Each of the entries contains information about a Page Table, as explained below:
+ *      Bits 31-11: PT 4KiB aligned address
+ *      Bits 11-9: Available
+ *      Bits 9-0: Flags
+ *          G - Ignored
+ *          S - Page Size (0 for 4KiB)
+ *          0 - Must be 0 always
+ *          A - Accessed
+ *          D - Cache Disable
+ *          W - Write Through
+ *          U - User/Supervisor (1 or 0)
+ *          R - RW/R (1 or 0)
+ *          P - Present (if page is in physical memory)
+ *  This means that the PD will ocupy 1024 * 4 = 4096 bytes = 4KiB.
+ * Each of the Page Tables is also an array of 1024 entries each containing 4 bytes. Each PT will occupy
+ * 1024 entries * 4 bytes = 4KiB. However, each PT manages 1024 pages, each of which are 4KiB in size.
+ * Therefore, each PT occupies 4KiB and manages 4MiB
+ *
+ *  Total manageable memory = 1024 entries in the PD * 1024 entries in the PT * 4KiB (Page Size) = 4GiB.
+ */
 #include <stdint.h>
 #include <stdio.h>
 #include <physmem.h>
 #include <stddef.h>
 
+
 extern void write_cr0(uint32_t value);
 extern void write_cr3(uint32_t value);
 extern uint32_t read_cr0(void);
 
+/* where the entry count and entry pointers will be stored by the BIOS e820 function */
 #define ENTRY_COUNT_ADDR 0x4000
 #define ENTRIES_PTR (ENTRY_COUNT_ADDR+4)
+
 #define REAL_MODE_BOUNDARY (0x00100000)
 #define PAGE_ALIGN         (0x1000)
 #define PAGE_SIZE          (4096)   /* 4KiB */
-#define PAGING_BIT          (31)
+#define PAGING_BIT         (31)
+
+
+#define PD_ENTRY_COUNT      (1024)
+#define PD_ENTRY_SIZE       (4)
+#define PD_SIZE             (PD_ENTRY_COUNT * PD_ENTRY_SIZE)
+
+#define PT_ENTRY_COUNT      (1024)
+#define PT_ENTRY_SIZE       (4)
+#define PT_SIZE             (PT_ENTRY_SIZE * PT_ENTRY_COUNT)
+
 
 uint32_t *page_directory = NULL;
 uint32_t *page_table = NULL;
@@ -73,37 +111,56 @@ uint32_t *get_pagedir_address(void)
     return NULL;
 }
 
+
 void physmem_init(void)
 {
     uint32_t address = 0;
 
-    /* Page directory occupies 4KiB */
+    /* Get the first 4KiB aligned address which is free */
     page_directory = get_pagedir_address();
 
-    /* Page table comes after page directory */
-    page_table = (page_directory + 4096);
-
-    /* We are mapping the first 1024 * 4KiB of memory = 4MiB */
-    for (int i = 0; i < 1024; i++)
-    {
-        /* Set the page's attributes in the page table */
-        page_table[i] = address | 3;
-        address += PAGE_SIZE;
-    }
-
-    /* Fill the first entry of the page directory */
-    page_directory[0] = (uint32_t) page_table;
-    page_directory[0] = page_directory[0] | 3;
-
-    /* Fill the page directory */
-    for(int i = 0; i < 1024; i++)
-    {
-        page_directory[i] = (0 | 2); 
-    }
-
-    /* Enable paging */
+    /* Place PD address into CR3 for the processor to use it after paging is enabled */
     write_cr3((uint32_t)page_directory);
 
+    /* We know that the PD occupies 4KiB (1024 entries of 4 bytes), and we will be placing
+    * the PTs right after the PD. This means that the address of the first PT will be PD + 4096.
+    */
+    page_table = (uint32_t*)((uint32_t)page_directory + 4096);
+
+    /* The PD occupies 4096 bytes.
+     * The PTs (1024 PTs) each occupy 4096 bytes => PTs occupy 4MiB
+     * This means that the first mappable address will be at: PD + 4KiB + 4MiB.
+     * Conveniently, this is also 4KiB aligned since the PD is 4KiB aligned, remember ?
+     */
+    address = 0;
+
+    /* PD set up. Each entry in the PD must contain the starting address of a PT */
+    for (int i = 0; i < PD_ENTRY_COUNT; i++)
+    {
+        /* Set up the PD entry */
+        page_directory[i] = (uint32_t) page_table;
+        page_directory[i] |= 2; /* supervisor, read/write, not present */
+
+        /* Set up the corresponding PT. Similar to the PD,
+         * each PT must contain the starting address of a page
+         */
+        for(int j = 0; j < PT_ENTRY_COUNT; j++)
+        {
+            page_table[j] = (uint32_t) address;
+            page_table[j] |= 3; /* supervisor, read/write, present */
+
+            address += (PAGE_SIZE);
+        }
+        
+        /* page_table is a uint32_t pointer, so if PAGE_SIZE was simply added
+         * to it, then it would be increased by PAGE_SIZE * sizeof(uint32).
+         */
+        page_table = (uint32_t*)((uint32_t)page_table + PAGE_SIZE);
+    }
+
+    page_directory[0] |= 1; /* enable present bit on first page table */
+
+    /* Tell the CPU to enable paging */
     uint32_t cr0 = read_cr0();
 
     cr0 |= (1 << PAGING_BIT);

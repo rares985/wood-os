@@ -19,6 +19,8 @@ void kernel_main()
 
     physmem_init();
 
+    printf("Hello, paging world!\n");
+
     while (1) {
 
     };

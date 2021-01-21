@@ -22,5 +22,5 @@ dirs:
 	mkdir -p $(BUILD_DIR)
 
 clean:
-	rm $(BUILD_DIR)/*
+	rm -f $(BUILD_DIR)/*
 	rmdir $(BUILD_DIR)

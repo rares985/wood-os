@@ -26,7 +26,7 @@ All the resources presented below, as well as any other information / explanatio
  ## Environment
  Since the OS is for x86, you need a cross-compiler. See [here](https://github.com/cfenollosa/os-tutorial/tree/master/11-kernel-crosscompiler) for info on how to cross-compile gcc and ld
  ## Building
- First you should install the necessary dependencies: `sudo apt-get install nasm bochs qemu`
+ First you should install the necessary dependencies: `sudo apt-get install nasm bochs qemu qemu-system-i386`
  For building the project, it is enough to issue the command `make` in the root directory of the project
  
  ## Debugging

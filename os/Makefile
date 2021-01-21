@@ -44,8 +44,28 @@ $(BUILD_DIR)/%.o: %.asm
 
 dirs:
 	mkdir -p $(BUILD_DIR)
+	mkdir -p $(BUILD_DIR)/kernel
+	mkdir -p $(BUILD_DIR)/cpu
+	mkdir -p $(BUILD_DIR)/drivers
+	mkdir -p $(BUILD_DIR)/libc
+	mkdir -p $(BUILD_DIR)/libc/stdlib
+	mkdir -p $(BUILD_DIR)/libc/stdio
+	mkdir -p $(BUILD_DIR)/libc/string
 
 clean:
-	rm $(OBJS)
-	rm $(BUILD_DIR)/kernel/kernel.bin
+	rm -f $(BUILD_DIR)/libc/stdlib/*
+	rmdir $(BUILD_DIR)/libc/stdlib
+	rm -f $(BUILD_DIR)/libc/stdio/*
+	rmdir $(BUILD_DIR)/libc/stdio
+	rm -f $(BUILD_DIR)/libc/string/*
+	rmdir $(BUILD_DIR)/libc/string
+	rm -f $(BUILD_DIR)/libc/*
+	rmdir $(BUILD_DIR)/libc
+	rm -f $(BUILD_DIR)/drivers/*
+	rmdir $(BUILD_DIR)/drivers/
+	rm -f $(BUILD_DIR)/kernel/*
+	rmdir $(BUILD_DIR)/kernel
+	rm -f $(BUILD_DIR)/cpu/*
+	rmdir $(BUILD_DIR)/cpu
+	rm -f $(BUILD_DIR)/*
 	rmdir $(BUILD_DIR)

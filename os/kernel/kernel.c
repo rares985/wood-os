@@ -2,11 +2,11 @@
 #include "idt.h"
 #include "keyboard.h"
 #include "timer.h"
-#include "string.h"
-#include "stdlib.h"
-#include "stdio.h"
-#include "irq.h"
-#include "isr.h"
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <irq.h>
+#include <isr.h>
 #include <physmem.h>
 #include <phys.h>
 
@@ -17,8 +17,7 @@ void kernel_main()
     irq_install();
     terminal_initialize();
 
-    // physmem_init();
-    physalloc_init();
+    physmem_init();
 
     uint32_t *page = (uint32_t*)physmem_alloc_block();
 

@@ -1,8 +1,12 @@
-#include <stdint.h>
-#include <stdio.h>
 #include <physmem.h>
 #include <phys.h>
-#include <stddef.h>
+
+/* Functions written in ASM */
+extern void write_cr0(uint32_t value);
+extern void write_cr3(uint32_t value);
+
+extern uint32_t read_cr0(void);
+extern uint32_t read_cr3(void);
 
 #define MAX_PAGE_COUNT      (1024 * 1024)
 #define BITMAP_MAX_SZ_BYTES (MAX_PAGE_COUNT / 8)
@@ -66,7 +70,7 @@ static void mmap_set_free(uint32_t index)
  * 1MB address boundary, which means that our bitmap will start at address 0x00100000 and span 128KB, up to a maximum
  * address of 0x11FFFF.
  */
-void physalloc_init(void)
+void physmem_init(void)
 {
     uint32_t available_memory = 0;
 
@@ -124,20 +128,33 @@ void physmem_free_block(void *page)
 
 void physmem_enable_paging(bool enable)
 {
+    uint32_t cr0;
 
+    cr0 = read_cr0();
+
+    if (enable)
+    {
+        cr0 |= (1 << PAGING_BIT);
+    }
+    else
+    {
+        cr0 &= ~(1 << PAGING_BIT);
+    }
+    write_cr0(cr0);
 }
 
 bool physmem_is_paging_enabled(void)
 {
+    return ((read_cr0() & (1 << PAGING_BIT)) != 0);
 
 }
 
 void physmem_set_PDBR(physaddr_t addr)
 {
-
+    write_cr3((uint32_t)addr);
 }
 
-physaddr_t  physmem_get_PDBR(void)
+physaddr_t physmem_get_PDBR(void)
 {
-
+    return (physaddr_t)read_cr3();
 }

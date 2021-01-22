@@ -10,6 +10,9 @@
 #define ENTRIES_PTR         (ENTRY_COUNT_ADDR+4)
 
 
+#define PAGING_BIT          (31)
+
+
 
 typedef enum mem_type_e {
     MEM_TYPE_INVALID = 0,

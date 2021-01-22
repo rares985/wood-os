@@ -11,9 +11,9 @@ static pt_entry_t *virtmem_ptable_lookup(page_table_t *table, virtaddr_t addr)
 
 static pd_entry_t *virtmem_pdirectory_lookup(page_directory_t *dir, virtaddr_t addr)
 {
-    if (NULL != table)
+    if (NULL != dir)
     {
-        return &table->m_entries[PD_INDEX(addr)];
+        return &dir->m_entries[PD_INDEX(addr)];
     }
     return NULL;
 }

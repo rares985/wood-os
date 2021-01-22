@@ -46,11 +46,11 @@ typedef uint32_t virtaddr_t;
 #define PTABLE_ADDR_SPACE_SIZE      (PAGES_PER_PTE * PAGE_SIZE)
 #define DTABLE_ADDR_SPACE_SIZE      (PTE_COUNT * PTABLE_ADDR_SPACE_SIZE)
 
-struct page_table_s {
+typedef struct page_table_s {
     pt_entry_t m_entries[PAGES_PER_PTE];
 } page_table_t;
 
-struct page_directory_s {
+typedef struct page_directory_s {
     pd_entry_t m_entries[PTE_COUNT];
 } page_directory_t;
 

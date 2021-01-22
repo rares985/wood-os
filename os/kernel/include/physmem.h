@@ -4,9 +4,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 typedef uint32_t physaddr_t;
-
 
 void        physalloc_init(void);
 

@@ -1,28 +1,26 @@
 #ifndef PHYSMEM_H_
 #define PHYSMEM_H_
 
-#include <stdint.h>
+#define PAGE_ALIGN         (0x1000)
+#define PAGE_SIZE          (4096)   /* 4KiB */
+#define PAGING_BIT         (31)
 
-typedef enum mem_type_e {
-    MEM_TYPE_INVALID = 0,
-    MEM_TYPE_FREE = 1,
-    MEM_TYPE_RESERVED = 2,
-    MEM_TYPE_ACPI_RECLAIMABLE = 3,
-    MEM_TYPE_ACPI_NON_VOLATILE = 4,
-    MEM_TYPE_BAD = 5,
-    MEM_TYPE_MAX_NO
-} mem_type_e;
 
-typedef struct mem_entry_s {
-    uint32_t base_lo;
-    uint32_t base_hi;
-    uint32_t length_lo;
-    uint32_t length_hi;
-    uint32_t type;
-    uint32_t acpi_attr;
-} mem_entry_t;
+#define PD_ENTRY_COUNT      (1024)
+#define PD_ENTRY_SIZE       (4)
+#define PD_SIZE             (PD_ENTRY_COUNT * PD_ENTRY_SIZE)
+
+#define PT_ENTRY_COUNT      (1024)
+#define PT_ENTRY_SIZE       (4)
+#define PT_SIZE             (PT_ENTRY_SIZE * PT_ENTRY_COUNT)
+
+
+
+
 
 
 void physmem_init(void);
+
+uint32_t get_pagedirectory_address(void);
 
 #endif /* PHYSMEM_H_ */

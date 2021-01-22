@@ -27,6 +27,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <physmem.h>
+#include <phys.h>
 #include <stddef.h>
 
 
@@ -34,27 +35,13 @@ extern void write_cr0(uint32_t value);
 extern void write_cr3(uint32_t value);
 extern uint32_t read_cr0(void);
 
-/* where the entry count and entry pointers will be stored by the BIOS e820 function */
-#define ENTRY_COUNT_ADDR 0x4000
-#define ENTRIES_PTR (ENTRY_COUNT_ADDR+4)
-
-#define REAL_MODE_BOUNDARY (0x00100000)
-#define PAGE_ALIGN         (0x1000)
-#define PAGE_SIZE          (4096)   /* 4KiB */
-#define PAGING_BIT         (31)
-
-
-#define PD_ENTRY_COUNT      (1024)
-#define PD_ENTRY_SIZE       (4)
-#define PD_SIZE             (PD_ENTRY_COUNT * PD_ENTRY_SIZE)
-
-#define PT_ENTRY_COUNT      (1024)
-#define PT_ENTRY_SIZE       (4)
-#define PT_SIZE             (PT_ENTRY_SIZE * PT_ENTRY_COUNT)
-
-
 uint32_t *page_directory = NULL;
 uint32_t *page_table = NULL;
+
+uint32_t get_pagedirectory_address(void)
+{
+    return (uint32_t)page_directory;
+}
 
 uint32_t *get_pagedir_address(void)
 {
@@ -110,6 +97,7 @@ uint32_t *get_pagedir_address(void)
 
     return NULL;
 }
+
 
 
 void physmem_init(void)

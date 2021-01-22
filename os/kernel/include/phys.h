@@ -5,7 +5,6 @@
 
 #define REAL_MODE_BOUNDARY  (0x00100000)
 
-
 /* where the entry count and entry pointers will be stored by the BIOS e820 function */
 #define ENTRY_COUNT_ADDR    (0x4000)
 #define ENTRIES_PTR         (ENTRY_COUNT_ADDR+4)

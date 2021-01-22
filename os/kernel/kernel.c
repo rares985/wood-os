@@ -8,7 +8,6 @@
 #include "irq.h"
 #include "isr.h"
 #include <physmem.h>
-#include <physalloc.h>
 #include <phys.h>
 
 
@@ -21,20 +20,20 @@ void kernel_main()
     // physmem_init();
     physalloc_init();
 
-    uint32_t *page = (uint32_t*)allocate_page();
+    uint32_t *page = (uint32_t*)physmem_alloc_block();
 
     printf("Address of first allocated page: %x\n", page);
 
-    free_page(page);
+    physmem_free_block(page);
 
-    page = (uint32_t*)allocate_page();
+    page = (uint32_t*)physmem_alloc_block();
     printf("Address of allocated page: %x\n", page);
 
-    uint32_t *page2 = (uint32_t*)allocate_page();
+    uint32_t *page2 = (uint32_t*)physmem_alloc_block();
     printf("Address of allocated page2: %x\n", page2);
 
-    free_page(page);
-    free_page(page2);
+    physmem_free_block(page);
+    physmem_free_block(page2);
 
     while (1) {
 

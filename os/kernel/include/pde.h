@@ -1,7 +1,9 @@
 #ifndef _PDE_H_
 #define _PDE_H_
 
-#include <stdint>
+#include <stdint.h>
+#include <stdbool.h>
+#include <physmem.h>
 
 typedef enum page_pde_flags_e {
 	PDE_PRESENT			=	1,		    /* 0000 0000 0000 0000 0000 0000 0000 001 */
@@ -17,16 +19,16 @@ typedef enum page_pde_flags_e {
    	PDE_FRAME			=	0x7FFFF000 	/* 1111 1111 1111 1111 1110 0000 0000 000 */
 } page_pde_flags_t;
 
-typedef uint32_t pd_entry;
+typedef uint32_t pd_entry_t;
 
-extern void		pd_entry_add_attrib (pd_entry* e, uint32_t attrib);
-extern void		pd_entry_del_attrib (pd_entry* e, uint32_t attrib);
-extern void		pd_entry_set_frame (pd_entry*, physical_addr);
-extern bool		pd_entry_is_present (pd_entry e);
-extern bool		pd_entry_is_user (pd_entry);
-extern bool		pd_entry_is_4mb (pd_entry);
-extern bool		pd_entry_is_writable (pd_entry e);
-extern uint32_t	pd_entry_pfn (pd_entry e);
-extern void		pd_entry_enable_global (pd_entry e);
+extern void		pd_entry_add_attrib (pd_entry_t* e, uint32_t attrib);
+extern void		pd_entry_del_attrib (pd_entry_t* e, uint32_t attrib);
+extern void		pd_entry_set_frame (pd_entry_t*, physaddr_t addr);
+extern bool		pd_entry_is_present (pd_entry_t e);
+extern bool		pd_entry_is_user (pd_entry_t);
+extern bool		pd_entry_is_4mb (pd_entry_t);
+extern bool		pd_entry_is_writable (pd_entry_t e);
+extern uint32_t	pd_entry_pfn (pd_entry_t e);
+extern void		pd_entry_enable_global (pd_entry_t e);
 
 #endif /* _PDE_H_ */

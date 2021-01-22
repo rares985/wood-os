@@ -1,26 +1,23 @@
-#ifndef PHYSMEM_H_
-#define PHYSMEM_H_
+#ifndef  __PHYSMEM__H_
+#define  __PHYSMEM__H_
 
-#define PAGE_ALIGN         (0x1000)
-#define PAGE_SIZE          (4096)   /* 4KiB */
-#define PAGING_BIT         (31)
+#include <stdint.h>
+#include <stdio.h>
+#include <stddef.h>
 
-
-#define PD_ENTRY_COUNT      (1024)
-#define PD_ENTRY_SIZE       (4)
-#define PD_SIZE             (PD_ENTRY_COUNT * PD_ENTRY_SIZE)
-
-#define PT_ENTRY_COUNT      (1024)
-#define PT_ENTRY_SIZE       (4)
-#define PT_SIZE             (PT_ENTRY_SIZE * PT_ENTRY_COUNT)
+typedef uint32_t physaddr_t;
 
 
+void        physalloc_init(void);
+
+void        *physmem_alloc_block(void);
+void        physmem_free_block(void *page);
+
+void        physmem_enable_paging(bool enable);
+bool        physmem_is_paging_enabled(void);
+
+void        physmem_set_PDBR(physaddr_t addr);
+physaddr_t  physmem_get_PDBR(void);
 
 
-
-
-void physmem_init(void);
-
-uint32_t get_pagedirectory_address(void);
-
-#endif /* PHYSMEM_H_ */
+#endif /* __PHYSMEM__H_ */
